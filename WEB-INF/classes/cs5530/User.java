@@ -9,6 +9,27 @@ public class User{
 	    //this.con = con;
 	}
 
+    public static boolean login(String login, String password, Connection con) throws Exception {
+	String sql = "SELECT * FROM users WHERE login='" 
+	    + login + "' && password='" + password+ "'";
+	
+	try {
+	    ResultSet rs = con.createStatement().executeQuery(sql);
+	    
+	    
+	    if(rs.next()){
+		return true;
+	    }
+	    
+	} catch (SQLException e) {
+	    System.out.println("FAILED");
+	    e.printStackTrace();
+	}
+	
+	return false;
+    }
+
+
     public static String register(String login, String firstname, String lastname, String password, String telnumber, Connection con) throws Exception{
 	    /*		String query;
 		String resultstr="";
