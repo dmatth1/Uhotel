@@ -1,0 +1,55 @@
+package cs5530;
+
+import java.sql.*;
+//import javax.servlet.http.*;
+
+public class User{
+    Statement stmt;
+	public User(Statement stmt) {
+	    this.stmt = stmt;
+	}
+
+    public String register(String login, String firstname, String lastname, String password, String telnumber) throws Exception{
+	    /*		String query;
+		String resultstr="";
+		ResultSet results; 
+		query="Select * from orders where "+attrName+"='"+attrValue+"'";
+		try{
+			results = stmt.executeQuery(query);
+        } catch(Exception e) {
+			System.err.println("Unable to execute query:"+query+"\n");
+	                System.err.println(e.getMessage());
+			throw(e);
+		}
+		System.out.println("Order:getOrders query="+query+"\n");
+		while (results.next()){
+			resultstr += "<b>"+results.getString("login")+"</b> purchased "+results.getInt("quantity") +
+							" copies of &nbsp'<i>"+results.getString("title")+"'</i><BR>\n";	
+		}
+		return resultstr;
+	    */
+
+	    String query = " insert into users (login, firstname, lastname, password, telnumber)"
+		+ " values (?, ?, ?, ?, ?)";
+	    
+	    PreparedStatement preparedStmt = con.prepareStatement(query);
+
+	    preparedStmt.setString(1, login);
+	    preparedStmt.setString(2, firstname);
+	    preparedStmt.setString(3, lastname);
+	    preparedStmt.setString(4, password);
+	    preparedStmt.setString(5, telnumber);
+	    
+	    try{
+		rs = preparedStmt.executeUpdate() == 1 ? true: false;
+	    }
+	    
+	    catch(Exception e){
+		e.printStackTrace();
+		System.out.println("cannot execute the query");
+	    }
+	    
+
+	    return rs;
+	}
+}
