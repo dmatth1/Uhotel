@@ -1,4 +1,4 @@
-<%@ page language="java" import="cs5530.*" %>
+<%@ page language="java" import="cs5530.*,java.util.ArrayList" %>
 <html>
 <head>
 <script LANGUAGE="javascript">
@@ -31,7 +31,12 @@ else {
 	   boolean success = User.login(login, password, connector.con);
 
 	if(success) {
-		result = "Thank you for loggin in " + login + ".";	    
+		     session.setAttribute("login", login);
+		    session.setAttribute("reservations", new ArrayList<Reservation>());
+
+		result = "Thank you for logging in " + login + ".";
+		result +="</br><a href='reserve.jsp'>Reserve and Checkout</a>";	    
+
 
 	    }
 
