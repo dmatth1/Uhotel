@@ -19,34 +19,41 @@ function check_all_fields(form_obj){
 <%
 String login = request.getParameter("login");
 String password = request.getParameter("password");
+String sessionLogin = session.getAttribute("login").toString();
 String result = "";
 
-if(login == null || password == null) {
+String userMenu = "Thank you for logging in " + (login == null ? sessionLogin : login) + ".";
+userMenu +="</br><a href='reserve.jsp'>Reserve and Checkout</a>";	    
+
+if((login == null || password == null) && sessionLogin == null) {
 	result = "No login or password specified.";
 }
 
 else {
-
+if(login != null && password != null) {
      Connector2 connector = new Connector2();
 	   boolean success = User.login(login, password, connector.con);
 
 	if(success) {
 		     session.setAttribute("login", login);
 		    session.setAttribute("reservations", new ArrayList<Reservation>());
-
-		result = "Thank you for logging in " + login + ".";
-		result +="</br><a href='reserve.jsp'>Reserve and Checkout</a>";	    
-
-
+		    
+		    result = userMenu;
 	    }
 
 	else	{
 		result = "Unable to log in with the specified login and password. Did you register?";
 	  }
-
-
+	  
  connector.closeStatement();
  connector.closeConnection();
+
+}
+	  
+else {
+     result = userMenu;
+	       
+}
 
 }
 %>

@@ -50,6 +50,7 @@ else {
 %>
 
 <p><%=result%></p>
+<br><a href="/~5530u39/login.jsp"> User page </a></p>
 <BR><a href="/~5530u39/"> Home </a></p>
 
 </body>
