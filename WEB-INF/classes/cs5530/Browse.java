@@ -93,12 +93,16 @@ public class Browse {
     }
     
     public static String printResults(ResultSet results) throws SQLException{
-	String result = "";
+	String result = "<table>";
 	while(results.next()) {
-	    result += "<br>HID: " + results.getInt(1) + "\tUsername: " + results.getString(2) +
-			       "\tCategory: " + results.getString(3) + "\tName: " + results.getString(4) + "\tCity: " + results.getString(5) +
-			       "\tState: " + results.getString(6) + "\tPrice Per: " + results.getInt(7);
+	    result += "<tr>";
+	    result += "<td>HID: " + results.getInt(1) + "</td><td>Username: " + results.getString(2) +
+			       "</td><td>Category: " + results.getString(3) + "</td><td>Name: " + results.getString(4) + "</td><td>City: " + results.getString(5) +
+			       "</td><td>State: " + results.getString(6) + "</td><td>Price Per: " + results.getInt(7) + "</td>";
+	    result += "</tr>";
 	}
+
+	result += "</table>";
 	return result;
     }
 

@@ -11,7 +11,7 @@
 String password = request.getParameter("password");
 */
 
-String sessionLogin = session.getAttribute("login");
+String sessionLogin = session.getAttribute("login").toString();
 String result = "";
 
 //Build browseForm
@@ -22,7 +22,7 @@ browseForm += "<br>State: <input type=text name='state'>";
 browseForm += "<br>City: <input type=text name='city'>";
 browseForm += "<br>Keywords: <input type=text name='keywords'>";
 browseForm += "<br>Category: <input type=text name='category'>";
-browseForm += "<br><input type=radio name='sort' value='price' checked><input type=radio name='sort' value='avg'><input type=radio name='sort' value='avgtrusted'>";
+browseForm += "<br>Sort By: <input type=radio name='sort' value='price' checked>Price<input type=radio name='sort' value='avg'>Average Feedback<input type=radio name='sort' value='avgtrusted'>Average Trusted Feedback";
 browseForm += "<br><input type=submit>";
 browseForm += "</form>";
 
@@ -31,15 +31,15 @@ int low_price = 0;
 int high_price = Integer.MAX_VALUE;
 String state = null, city = null, text_search = null, category = null, sort = null;
 
-if(request.getParameter("low_price") != null) low_price = request.getParamter("low_price");
-if(request.getParameter("high_price") != null) high_price = request.getParameter("high_price");
+if(request.getParameter("low_price") != null && !request.getParameter("low_price").isEmpty()) low_price = Integer.parseInt(request.getParameter("low_price"));
+if(request.getParameter("high_price") != null && !request.getParameter("high_price").isEmpty()) high_price = Integer.parseInt(request.getParameter("high_price"));
 
-if(request.getParameter("city") != null) city = request.getParameter("city");
-else if(request.getParameter("state") != null) state = request.getParameter("state");
+if(request.getParameter("city") != null && !request.getParameter("city").isEmpty()) city = request.getParameter("city");
+else if(request.getParameter("state") != null && !request.getParameter("state").isEmpty()) state = request.getParameter("state");
 
-if(request.getParameter("category") != null) category = request.getParameter("category");
+if(request.getParameter("category") != null && !request.getParameter("category").isEmpty()) category = request.getParameter("category");
 
-if(request.getParameter("sort") == null) sort = "price";
+if(request.getParameter("sort") == null || request.getParameter("sort").isEmpty()) sort = "price";
 else sort = request.getParameter("sort");
 
 
@@ -52,7 +52,7 @@ else {
      
      Connector2 connector = new Connector2();
      String results = "";
-     if(request.getParameter("keywords") != null) {
+     if(request.getParameter("keywords") != null && !request.getParameter("keywords").isEmpty()) {
      	results = Browse.withTextSearch(state, city, category, low_price, high_price, request.getParameter("keywords"), sort, connector.con);
      }
      else {
