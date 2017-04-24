@@ -98,7 +98,7 @@ public class Browse {
 	    result += "<tr>";
 	    result += "<td>HID: " + results.getInt(1) + "</td><td>Username: " + results.getString(2) +
 			       "</td><td>Category: " + results.getString(3) + "</td><td>Name: " + results.getString(4) + "</td><td>City: " + results.getString(5) +
-			       "</td><td>State: " + results.getString(6) + "</td><td>Price Per: " + results.getInt(7) + "</td>";
+		"</td><td>State: " + results.getString(6) + "</td><td>Price Per: " + results.getInt(7) + "</td><td><a href='th.jsp?hid=" + results.getInt(1) + "'>Overview</a></td>";
 	    result += "</tr>";
 	}
 

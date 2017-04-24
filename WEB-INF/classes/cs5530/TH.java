@@ -70,4 +70,39 @@ public class TH {
 
 	return false;
     }
+
+    public static String usefullnessFeedback(String login, String hid, String n_useful, Connection con) throws SQLException{
+	String ret = "";
+	String query = "select feedback.fid, feedback.login, feedback.score, feedback.text, feedback.date " +
+	    "from feedback,rates " +
+	    "where hid = ? and feedback.fid = rates.fid " +
+	    "group by feedback.fid " +
+	    "order by avg(rates.rating) desc " +
+	    "limit ?";
+
+	PreparedStatement preparedStmt = con.prepareStatement(query);
+	preparedStmt.setInt(1, Integer.parseInt(hid));
+	preparedStmt.setInt(2, Integer.parseInt(n_useful));
+
+	try{
+	    ResultSet results = preparedStmt.executeQuery();
+	    ret += "<table>";
+	    while(results.next()) {
+		ret += "<tr>";
+		ret += "<td>Username: " + results.getString(2) +
+				   "</td><td>Score: " + results.getInt(3) + "</td><td>Text: " + results.getString(4)
+				   + "</td><td>Date: " + results.getDate(5) + "</td>";
+		ret += "</tr>";
+	    }
+	    ret += "</table";
+	}
+
+	catch(Exception e){
+	    e.printStackTrace();
+	    ret = "cannot execute the query";
+	}
+
+
+	return ret;
+    }
 }
