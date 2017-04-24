@@ -1,0 +1,47 @@
+<%@ page language="java" import="cs5530.*,java.util.ArrayList" %>
+<html>
+<head>
+<script LANGUAGE="javascript">
+
+</script> 
+</head>
+<body>
+
+<%
+String sessionLogin = session.getAttribute("login").toString();
+String result = "";
+
+result += "<br><form action='trusted.jsp' method=get>Trust User: <input type=text name='user' required><input type=submit></form>";
+
+Connector2 connector = new Connector();
+//boolean success = User(login, password, connector.con);
+
+try{
+	String sql = "select * from trust where login1 = '" + sessionLogin + "'";
+	ResultSet rs = connector.con.createStatement.executeQuery(sql);
+	while(rs.next()) {
+		
+	}
+} catch(Exception e) {
+  	result += e.toString();
+} 
+ connector.closeStatement();
+ connector.closeConnection();
+
+}
+	  
+else {
+     result = userMenu;
+	       
+}
+
+}
+%>
+
+  
+<p><%=result%></p>
+
+
+<BR><a href="/~5530u39/"> Home </a></p>
+
+</body>

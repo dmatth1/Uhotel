@@ -25,6 +25,7 @@ String result = "";
 String userMenu = "Thank you for logging in " + (login == null ? sessionLogin : login) + ".";
 userMenu +="</br><a href='reserve.jsp'>Reserve and Checkout</a>";	    
 userMenu += "<br><a href='browse.jsp'>Browse TH's</a>";
+userMenu += "<br><a href='trusted.jsp'>Trusted Users</a>";
 
 if((login == null || password == null) && sessionLogin == null) {
 	result = "No login or password specified.";

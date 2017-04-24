@@ -142,7 +142,7 @@ else {
   
 <p><%=result%></p>
 
-<br><a href="/~5530u39/login.jsp"> User Page </a></p>
-<BR><a href="/~5530u39/"> Home </a></p>
+<br><a href="/~5530u39/login.jsp"> User Page </a>
+<BR><a href="/~5530u39/"> Home </a>
 
 </body>
