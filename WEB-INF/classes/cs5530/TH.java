@@ -5,8 +5,175 @@ import java.util.Date;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+
 public class TH {
     public TH() {
+
+    }
+
+    public static String addTH(String login, ArrayList<String> items, Connection con) throws NumberFormatException, SQLException{
+	
+	String ret = "";
+	boolean rs = false;
+	String query = "insert into th (login, category, name, URL, telnumber,"
+	    + "yearbuilt, numrooms, address, city, state, zip, price_per)"
+	    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	
+	PreparedStatement preparedStmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+	preparedStmt.setString (1, login);
+	String s = "";
+
+	for (int i = 0; i < items.size() -1; i++){
+	    s = items.get(i);
+	    
+	    boolean is_int = false;
+	    if (s.contains(":")){ 
+		if(s.split(":")[1] == "int") {
+		    is_int = true;
+		    preparedStmt.setInt(i+2, Integer.parseInt(s.split(":")[0]));
+		}
+	    }
+	    if(!is_int)
+		preparedStmt.setString (i+2, s);
+	}
+	int hid = 1;
+
+	try{
+	    rs = preparedStmt.execute();
+	    ResultSet rs1 = preparedStmt.getGeneratedKeys();
+	    if (rs1.next()) hid = rs1.getInt(1);
+	}
+	
+	catch(Exception e){
+	    e.printStackTrace();
+	    ret = "cannot execute the query" + e.toString();
+	}
+
+	String keywords_str = items.get(items.size() - 1);
+	for(String keyword: keywords_str.split(",")) {
+	    String sql = "insert into keywords (word, hid) values ('" + keyword + "', '" + hid + "')";
+	    con.createStatement().executeUpdate(sql);
+	}
+	ret += "<br><b>Added new TH!</b><br>";
+	
+
+	return ret;
+	
+    }
+
+    public static String mostPopularTHs(Statement stmt, int limit) throws SQLException{
+	String output = "";
+	ArrayList<String> categories = new ArrayList<String>();
+	try {
+	    categories = getCategories(stmt);
+	}
+	catch(Exception e) {
+	    output = "With categories" + e.toString();
+	}
+	ResultSet results = null;
+
+	output += "<h3>Most Popular TH's</h3>";
+	try{
+      	for(String category: categories){
+	    output += "<br><b>Category: " + category + "</b><br>";
+	    output += "<table>";
+	    output += "<tr><th>HID</th><th>Category</th><th>Visits</th></tr>";
+	
+	    String sql = "select t.hid, category, count(t.hid) as visitCount "
+		+ "from th t, visit v "
+		+ "where (t.hid = v.hid) and (category = " +  "'" +  category + "'" + " )"
+		+ " group by hid  "
+		+ " order by visitCount desc limit " + limit + ";";
+	    results = stmt.executeQuery(sql);
+	    while (results.next())
+		output += "<tr><td>" + results.getString("hid")+ "</td><td>" + results.getString("category")
+		    + "</td><td>" + results.getString("visitCount") +"</td></tr>";
+
+	    output += "</table>";
+	    results.close();
+	}
+	}
+	catch(Exception e) {
+	    output += "With results " + e.toString();
+	}
+
+	return output;
+    }
+
+    public static String mostExpensiveTHs(Statement stmt, Integer limit) throws SQLException{
+	
+	String output = "";
+	ArrayList<String> categories = getCategories(stmt);
+	ResultSet results = null;
+	
+	output += "<h3>Most Expensive TH's</h3>";
+	for(String category: categories){
+	    output += "<br><b>Category: " + category + "</b><br>";
+	    output += "<table>";
+	    output += "<tr><th>HID</th><th>Category</th><th>Visit Count</th><th>Average Cost</th></tr>";
+	
+	    String sql = "select t.hid, category, count(t.hid) as visitCount, avg(cost) as avgCost "
+		+ "from th t, visit v "
+		+ "where (t.hid = v.hid) and (category = " +  "'" +  category + "'" + " )"
+		+ " group by hid  "
+		+ " order by avgCost desc limit " + limit + ";";
+	    results = stmt.executeQuery(sql);
+	    while (results.next())
+		output += "<tr><td>" + results.getString("hid")+ "</td><td>" + results.getString("category")
+		    + "</td><td>" + results.getString("visitCount") + "</td><td>" + results.getString("avgCost") + "</td></tr>";
+
+	    results.close();
+	    output += "</table>";
+	}
+
+	return output;
+
+
+    }
+
+    public static String mostHighlyRatedTHs(Statement stmt, Integer limit) throws SQLException{
+
+	String output = "";
+	ArrayList<String> categories = getCategories(stmt);
+	ResultSet results = null;
+	
+	output += "<h3>Highest Rated TH's</h3>";
+	for(String category: categories){
+	    output += "<br><b>Category: " + category + "</b><br>";
+	    output += "<table>";
+	    output += "<tr><th>HID</th><th>Category</th><th>Average Score</th></tr>";
+
+	    String sql = "select f.hid, category, avg(score) as avgScore "
+		+ "from th t, feedback f "
+		+ "where (t.hid = f.hid) and (category = " +  "'" +  category + "'" + " )"
+		+ " group by f.hid  "
+		+ " order by avgScore desc limit " + limit + ";";
+	    results = stmt.executeQuery(sql);
+	    while (results.next())
+		output += "<tr><td>" + results.getString("hid")+ "</td><td>" + results.getString("category")
+		    + "</td><td>" + results.getString("avgScore") + "</td></tr>";
+
+	    output += "</table>";
+	    results.close();
+	    
+	}
+
+	return output;
+
+
+    }
+
+    public static ArrayList<String> getCategories(Statement stmt) throws SQLException{
+	ArrayList<String> categories = new ArrayList<String>();
+
+	String sql = "select distinct category from th";
+
+	ResultSet results = stmt.executeQuery(sql);
+
+	while(results.next())
+	    categories.add(results.getString(1));
+	return categories;
 
     }
 

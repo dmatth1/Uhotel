@@ -1,0 +1,47 @@
+<%@ page language="java" import="cs5530.*,java.util.ArrayList, java.sql.*" %>
+<html>
+<head>
+<script LANGUAGE="javascript">
+
+</script> 
+</head>
+<body>
+
+<%
+String sessionLogin = session.getAttribute("login").toString();
+String result = "";
+Connector2 connector = new Connector2();
+
+String m = request.getParameter("m");
+
+//Default m
+if(m == null || m.isEmpty()) {
+     m = "5";
+}
+result += "<br><form action='stats.jsp' method=get>Choose M: <input type=number name='m' min=0 required value=" + m + "><input type=submit></form><br>";
+
+//Show tables
+try{
+	Connection con = connector.con;
+	Statement s = con.createStatement();
+	int m_int = Integer.parseInt(m);
+
+
+	String str = TH.mostPopularTHs(s, m_int);
+	if(str == null) result += "its null!";
+	//result = str.toString();
+	%><p><%=str%></p><%
+} catch(Exception e) {
+  	result += e.toString();
+} 
+ connector.closeStatement();
+ connector.closeConnection();
+%>
+
+  
+<p><%=result%></p>
+
+<br><a href="/~5530u39/login.jsp"> User Page </a>
+<BR><a href="/~5530u39/"> Home </a>
+
+</body>
