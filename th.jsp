@@ -20,6 +20,14 @@ else {
      String hid = request.getParameter("hid");
      Connector2 connector = new Connector2();
 
+     //Rate feedback
+     String feedback_rating= request.getParameter("feedback_rating");
+     String fid = request.getParameter("fid");
+     if(feedback_rating != null && !feedback_rating.isEmpty() && fid != null && !fid.isEmpty()) {
+     	result += "<b>" + TH.rateFeedback(sessionLogin, fid, feedback_rating, connector.con) + "</b><br>";
+     }
+
+
      //Favorite
      String favorite = request.getParameter("favorite");
      if(favorite != null && favorite.equals("yes")) {

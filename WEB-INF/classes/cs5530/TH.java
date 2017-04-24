@@ -10,6 +10,30 @@ public class TH {
 
     }
 
+    public static String rateFeedback(String login, String fid, String feedback_rating, Connection con) throws SQLException {
+	String ret = "";
+	String query = " insert into rates (login, fid, rating)"
+	    + " values (?, ?, ?)";
+
+	PreparedStatement preparedStmt = con.prepareStatement(query);
+	preparedStmt.setString(1, login);
+	preparedStmt.setInt(2, Integer.parseInt(fid));
+	preparedStmt.setInt(3, Integer.parseInt(feedback_rating));
+
+	try{
+	    preparedStmt.executeUpdate();
+	    ret = "Successfully rated feedback!";
+	}
+
+	catch(Exception e){
+	    e.printStackTrace();
+	    ret = "cannot execute the query" + e.toString();
+	}
+
+
+	return ret;
+    }
+
     public static boolean bookReservation(String login, Reservation r, Connection con) {
 
 	try {
@@ -98,9 +122,28 @@ public class TH {
 	    ret += "<table>";
 	    while(results.next()) {
 		ret += "<tr>";
+
 		ret += "<td>Username: " + results.getString(2) +
 				   "</td><td>Score: " + results.getInt(3) + "</td><td>Text: " + results.getString(4)
 				   + "</td><td>Date: " + results.getDate(5) + "</td>";
+
+		//If logged in user left feedback, show no rate
+		if(!results.getString(2).equals(login)) {
+		    preparedStmt = con.prepareStatement("select * from rates where fid = ? and login = ?");
+		    preparedStmt.setInt(1, results.getInt(1));
+		    preparedStmt.setString(2, login);
+		    ResultSet rs = preparedStmt.executeQuery();
+		    
+		    //If already left feedback rating, show rating left
+		    if(rs.next()) {
+			ret += "<td>Rating: " + rs.getString(3) + "</td>";
+		    }
+		    else {
+			ret += "<td><form method=get action='th.jsp'>Rating: <input type=number name='feedback_rating' min=0 max=2 required><input type=hidden name='hid' value='" + hid + "'><input type=hidden name='fid' value='" + results.getString(1) + "'><input type=submit></form></td>";
+		
+		    }
+
+		}
 		ret += "</tr>";
 	    }
 	    ret += "</table";
