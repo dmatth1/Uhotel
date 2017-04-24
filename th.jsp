@@ -19,6 +19,41 @@ if(request.getParameter("hid") == null) {
 else {
      String hid = request.getParameter("hid");
      Connector2 connector = new Connector2();
+
+     //Favorite
+     String favorite = request.getParameter("favorite");
+     if(favorite != null && favorite.equals("yes")) {
+     	try {
+     	String sql = "insert into favorites (hid, login) values (?,?)";
+	PreparedStatement psmt = connector.con.prepareStatement(sql);
+	psmt.setInt(1, Integer.parseInt(hid));
+	psmt.setString(2, sessionLogin);
+	psmt.executeUpdate();
+
+	result += "Favorited!";
+     	} catch(Exception e) {
+	  result += "Unable to favorite";
+	  result += e.toString();
+	}
+     }
+     else {
+     	  String favoriteHTML = "<a href='th.jsp?hid=" + hid + "&favorite=yes'>Favorite this place</a>";
+     	  String sql = "SELECT * FROM favorites WHERE hid = '" + hid + "' AND login = '" + sessionLogin + "'";
+    	  try {
+     	      ResultSet rs = connector.con.createStatement().executeQuery(sql);
+	      if(rs.next()) {
+	      	result += "You have favorited this place!";
+	 	}
+		else {
+		result += favoriteHTML;
+		}
+		
+	} catch(Exception e) {
+	  result += favoriteHTML;
+	}	 
+     }
+
+     //TH stats
      String sql = "SELECT * FROM th WHERE hid = '" + hid + "'";
 
      try{
