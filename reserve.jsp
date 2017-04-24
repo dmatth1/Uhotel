@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.ArrayList, cs5530.*" %>
+<%@ page language="java" import="java.util.ArrayList, java.sql.*, cs5530.*" %>
 <html>
 <head>
 <script LANGUAGE="javascript">
@@ -40,12 +40,32 @@ else {
 		   result += "<br>Reservation added to checkout!";
 		   reservations.add(newReservation);
 		 }
-		 
+
+	result += "<br><b>Your reservations<b>";		 
 	for(Reservation r: reservations) {
 			result += "<br>House ID:" + r.house_id + "    StartDate:" + r.startDate + "    EndDate:" + r.endDate;
 			}
 
 	result += "<br><a href='checkout.jsp'>Checkout</a>";
+
+	result += "<br><b>Recommended TH</b>";
+	
+	//Recommended TH suggestions
+	if(house_id != null) {
+	try {
+	Connector2 connector = new Connector2();
+	String sql = "select v2.hid, count(v2.hid) " +
+		      "from visit v1, visit v2 " +
+		      "where v1.hid = " + house_id  + " and v1.login = v2.login and v1.login != '" + login + "' and v2.hid != " + house_id +
+		      " group by(v2.hid) order by count(v2.hid) desc";
+	ResultSet results = connector.con.createStatement().executeQuery(sql);
+	while(results.next()) {
+			result += "<br>Housing ID: " + results.getInt(1) + "\tFirst-Degree Visits: " + results.getInt(2);
+	}
+	} catch(Exception e) {
+
+	}
+	}
 }
 %>
 

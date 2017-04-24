@@ -1,0 +1,35 @@
+<%@ page language="java" import="java.util.ArrayList, cs5530.*" %>
+<html>
+<head>
+<script LANGUAGE="javascript">
+
+function check_all_fields(form_obj){
+	alert(form_obj.searchAttribute.value+"='"+form_obj.attributeValue.value+"'");
+	if( form_obj.attributeValue.value == ""){
+		alert("Search field should be nonempty");
+		return false;
+	}
+	return true;
+}
+
+</script> 
+</head>
+<body>
+
+<%
+String login = session.getAttribute("login").toString();
+ArrayList<Reservation> reservations = (ArrayList<Reservation>) session.getAttribute("reservations");
+String result = "";
+Connector2 connector = 
+
+for(Reservation r: reservations) {
+		result += "<br>House ID:" + r.house_id + "    StartDate:" + r.startDate + "    EndDate:" + r.endDate;
+
+}
+
+%>
+
+<p><%=result%></p>
+<BR><a href="/~5530u39/"> Home </a></p>
+
+</body>
