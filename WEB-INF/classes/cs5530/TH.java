@@ -71,14 +71,23 @@ public class TH {
 	return false;
     }
 
-    public static String usefullnessFeedback(String login, String hid, String n_useful, Connection con) throws SQLException{
+    public static String usefullnessFeedback(boolean mustBeRated, String login, String hid, String n_useful, Connection con) throws SQLException{
 	String ret = "";
-	String query = "select feedback.fid, feedback.login, feedback.score, feedback.text, feedback.date " +
+	String query = "";
+	if(mustBeRated) {
+	    query = "select feedback.fid, feedback.login, feedback.score, feedback.text, feedback.date " +
 	    "from feedback,rates " +
 	    "where hid = ? and feedback.fid = rates.fid " +
 	    "group by feedback.fid " +
 	    "order by avg(rates.rating) desc " +
 	    "limit ?";
+	}
+	else {
+	    query = "select feedback.fid, feedback.login, feedback.score, feedback.text, feedback.date " +
+	    "from feedback " +
+	    "where hid = ? " +
+	    "limit ?";
+	}
 
 	PreparedStatement preparedStmt = con.prepareStatement(query);
 	preparedStmt.setInt(1, Integer.parseInt(hid));
@@ -99,7 +108,7 @@ public class TH {
 
 	catch(Exception e){
 	    e.printStackTrace();
-	    ret = "cannot execute the query";
+	    ret = "cannot execute the query" + e.toString();
 	}
 
 

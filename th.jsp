@@ -74,14 +74,52 @@ else {
 		result += "<br>Price per person: " + rs.getString("price_per");
 	}
 
+	//Record user feedback
+	String feedback_text = request.getParameter("feedback_text");
+	String feedback_val = request.getParameter("feedback_val");
+	
+	if(feedback_text != null && !feedback_text.isEmpty() && feedback_val != null && !feedback_val.isEmpty()) {
+		try {
+     		    sql = "insert into feedback (hid, login,score,text) values (?,?,?,?)";
+		    PreparedStatement psmt = connector.con.prepareStatement(sql);
+		    psmt.setInt(1, Integer.parseInt(hid));
+		    psmt.setString(2, sessionLogin);
+		    psmt.setInt(3, Integer.parseInt(feedback_val));
+		    psmt.setString(4, feedback_text);
+		    psmt.executeUpdate();
+
+		    result += "<br><b>You have left feedback for this place. Thank you!</b>";
+     		} catch(Exception e) {
+	  	  result += "<br>Unable to leave feedback";
+	 	  result += e.toString();
+		}		
+	}
+	else {
+	     sql = "Select * from feedback where hid = '" + hid + "' and login = '" + sessionLogin + "'";
+	     rs = connector.con.createStatement().executeQuery(sql);	
+	     if(rs.next()) {
+	     	result += "<br><b>You have left feedback for this place.</b>"; 
+		}
+		else {
+		     result += "<br><form method=get action='th.jsp'><input type=hidden name='hid' value='" + hid + "'>Leave Feedback: <input type=text name='feedback_text' required>Score: <input type=number name='feedback_val' min=0 max=10 required><input type=submit></form>";
+	   	}
+	}
+
+
 	//Top n most useful feedbacks
 	String n_useful = request.getParameter("n_useful");
 	if(n_useful == null || n_useful.isEmpty()) n_useful = "10";
 	result += "<form name='most_useful' method=get action='th.jsp'><input type=hidden name='hid' value='" + hid + "'>";
 	result += "Top <input type=number name='n_useful' min=0 value=" + n_useful + "> Most Useful Feedbacks <input type=submit></form><br>";
 	
-	result += TH.usefullnessFeedback(sessionLogin, hid, n_useful, connector.con);
+	//Not all feedback have ratings
+	if(request.getParameter("n_useful") == null || request.getParameter("n_useful").isEmpty()) {
+		result += TH.usefullnessFeedback(false, sessionLogin, hid, n_useful, connector.con);
+	}
+	else {
+	     result += TH.usefullnessFeedback(true, sessionLogin, hid, n_useful, connector.con);
 
+	     }
      } catch(Exception e) {
        result = "Invalid hid specified.";
      }
